@@ -6,7 +6,7 @@ const blogRouter = express.Router();
 
 blogRouter.post("/", async (req, res, next) => {
   try {
-    const newBlogPost = new blogsModel(req.body);
+    const newBlogPost = new blogModel(req.body);
 
     const { _id } = await newBlogPost.save();
     res.status(201).send({ _id });
@@ -17,7 +17,7 @@ blogRouter.post("/", async (req, res, next) => {
 
 blogRouter.get("/", async (req, res, next) => {
   try {
-    const blogPost = await blogPostModel.find();
+    const blogPost = await blogModel.find();
     res.send(blogPost);
   } catch (error) {
     next(error);
@@ -26,9 +26,9 @@ blogRouter.get("/", async (req, res, next) => {
 
 blogRouter.get("/:blogId", async (req, res, next) => {
   try {
-    const blogPost = await blogModel.findById(req.params.userId);
+    const blogPost = await blogModel.findById(req.params.blogId);
 
-    if (user) {
+    if (blogPost) {
       res.send(blogPost);
     } else {
       next(createError(404, `blog with id ${req.params.blogId} not found!`));
@@ -60,7 +60,7 @@ blogRouter.delete("/:blogId", async (req, res, next) => {
   try {
     const deletedBlog = await blogModel.findByIdAndDelete(req.params.blogId);
     if (deletedBlog) {
-      res.status(204).send();
+      res.send(deletedBlog);
     } else {
       next(createError(404, `Blog with id ${req.params.blogId} not found!`));
     }
