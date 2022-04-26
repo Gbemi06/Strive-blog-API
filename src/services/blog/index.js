@@ -6,9 +6,9 @@ const blogRouter = express.Router();
 
 blogRouter.post("/", async (req, res, next) => {
   try {
-    const newUser = new UsersModel(req.body);
+    const newBlogPost = new blogsModel(req.body);
 
-    const { _id } = await newUser.save();
+    const { _id } = await newBlogPost.save();
     res.status(201).send({ _id });
   } catch (error) {
     next(error);
@@ -17,8 +17,8 @@ blogRouter.post("/", async (req, res, next) => {
 
 blogRouter.get("/", async (req, res, next) => {
   try {
-    const users = await UsersModel.find();
-    res.send(users);
+    const blogPost = await blogPostModel.find();
+    res.send(blogPost);
   } catch (error) {
     next(error);
   }
@@ -26,12 +26,12 @@ blogRouter.get("/", async (req, res, next) => {
 
 blogRouter.get("/:blogId", async (req, res, next) => {
   try {
-    const user = await blogModel.findById(req.params.userId);
+    const blogPost = await blogModel.findById(req.params.userId);
 
     if (user) {
-      res.send(user);
+      res.send(blogPost);
     } else {
-      next(createError(404, `blog with id ${req.params.userId} not found!`));
+      next(createError(404, `blog with id ${req.params.blogId} not found!`));
     }
   } catch (error) {
     next(error);
@@ -41,15 +41,15 @@ blogRouter.get("/:blogId", async (req, res, next) => {
 blogRouter.put("/:blogId", async (req, res, next) => {
   try {
     const updatedBlog = await blogModel.findByIdAndUpdate(
-      req.params.userId, // WHO
-      req.body, // HOW
-      { new: true, runValidators: true }
+      req.params.blogId,
+      req.body,
+      { new: true }
     );
 
     if (updatedBlog) {
       res.send(updatedBlog);
     } else {
-      next(createError(404, `Blog with id ${req.params.userId} not found!`));
+      next(createError(404, `Blog with id ${req.params.blogId} not found!`));
     }
   } catch (error) {
     next(error);
@@ -58,11 +58,11 @@ blogRouter.put("/:blogId", async (req, res, next) => {
 
 blogRouter.delete("/:blogId", async (req, res, next) => {
   try {
-    const deletedBlog = await blogModel.findByIdAndDelete(req.params.userId);
+    const deletedBlog = await blogModel.findByIdAndDelete(req.params.blogId);
     if (deletedBlog) {
       res.status(204).send();
     } else {
-      next(createError(404, `Blog with id ${req.params.userId} not found!`));
+      next(createError(404, `Blog with id ${req.params.blogId} not found!`));
     }
   } catch (error) {
     next(error);
