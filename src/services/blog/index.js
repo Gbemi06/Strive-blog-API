@@ -71,29 +71,29 @@ blogRouter.delete("/:blogId", async (req, res, next) => {
 
 blogRouter.post("/:blogId/comments", async (req, res, next) => {
   try {
-    const comments = await blogModel.findById(req.body.blogId, {
+    const comment = await blogModel.findById(req.params.blogId, {
       _id: 0,
     });
-
-    if (comments) {
+    console.log(comment);
+    if (comment) {
       const addComment = {
-        ...comments.toObject(),
+        ...req.body,
         entryDate: new Date(),
       };
-      console.log("BOOK TO INSERT ", addComment);
+      console.log("comment object ", addComment);
 
       const newBlog = await blogModel.findByIdAndUpdate(
         req.params.blogId,
-        { $push: { comment: addComment } },
+        { $push: { comments: addComment } },
         { new: true, runValidators: true }
       );
       if (newBlog) {
         res.send(newBlog);
       } else {
-        next(createError(404, `User with id ${req.params.blogId} not found!`));
+        next(createError(404, `not found!`));
       }
     } else {
-      next(createError(404, `Book with id ${req.body.blogId} not found!`));
+      next(createError(404, `BlogPost with id ${req.body.blogId} not found!`));
     }
   } catch (error) {
     next(error);
@@ -130,6 +130,49 @@ blogRouter.get("/:blogId/comments/:commentId", async (req, res, next) => {
     } else {
       next(
         createError(404, `Blog Post for id ${req.params.blogId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogRouter.put("/:blogId/comments/:commentId", async (req, res, next) => {
+  try {
+    const blogPost = await blogModel.findById(req.params.blogId);
+    if (blogPost) {
+      const comments = blogPost.comments.find(
+        (comment) => comment._id.toString() === req.params.commentId
+      );
+      if (comments) {
+        res.send(comments);
+      } else {
+        next(
+          createError(404, `comment with id ${req.params.commentId} not found`)
+        );
+      }
+    } else {
+      next(
+        createError(404, `Blog Post for id ${req.params.blogId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogRouter.delete("/:blogId/comments/:commentId", async (req, res, next) => {
+  try {
+    const updatedComment = await blogModel.findByIdAndUpdate(
+      req.params.blogId,
+      { $pull: { comments: { _id: req.params.commentId } } },
+      { new: true }
+    );
+    if (updatedComment) {
+      res.send(deletedComment);
+    } else {
+      next(
+        createError(404, `comment with id ${req.params.commentId} not found`)
       );
     }
   } catch (error) {
