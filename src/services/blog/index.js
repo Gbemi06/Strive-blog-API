@@ -141,11 +141,18 @@ blogRouter.put("/:blogId/comments/:commentId", async (req, res, next) => {
   try {
     const blogPost = await blogModel.findById(req.params.blogId);
     if (blogPost) {
-      const comments = blogPost.comments.find(
+      const commentIndex = blogPost.comments.findIndex(
         (comment) => comment._id.toString() === req.params.commentId
       );
-      if (comments) {
-        res.send(comments);
+      console.log(commentIndex);
+      if (commentIndex !== -1) {
+        blogPost.comments[commentIndex] = {
+          ...blogPost.comments[commentIndex].toObject(),
+          ...req.body,
+          entryDate: new Date(),
+        };
+        await blogPost.save();
+        res.send(blogPost);
       } else {
         next(
           createError(404, `comment with id ${req.params.commentId} not found`)
