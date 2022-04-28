@@ -10,6 +10,7 @@ import {
   notFoundError,
   unauthorizedError,
 } from "./errorHandler.js";
+import authorsRouter from "./services/authors/index.js";
 
 const server = express();
 const port = process.env.PORT || 4000;
@@ -18,6 +19,7 @@ server.use(cors());
 server.use(express.json());
 
 server.use("/blogPosts", blogRouter);
+server.use("/authors", authorsRouter);
 
 server.use(unauthorizedError);
 server.use(badRequestError);

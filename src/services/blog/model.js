@@ -9,10 +9,7 @@ const blogSchema = new Schema(
     cover: { type: String, required: true },
     readTime: { value: { type: Number }, unit: { type: String } },
 
-    author: {
-      name: { type: String, required: true },
-      avatar: { type: String, required: true },
-    },
+    author: [{ type: Schema.Types.ObjectId, ref: "Authors" }],
     content: { type: String, required: true },
     comments: [{ name: String, comment: String, entryDate: Date }],
   },

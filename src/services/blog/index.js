@@ -25,7 +25,8 @@ blogRouter.get("/", async (req, res, next) => {
       .find(mongoQuery.criteria, mongoQuery.options.fields)
       .sort(mongoQuery.options.sort)
       .limit(mongoQuery.options.limit || 10)
-      .skip(mongoQuery.options.skip || 0);
+      .skip(mongoQuery.options.skip || 0)
+      .populate({ path: "author", select: "firstName" });
     res.send(blogPost);
   } catch (error) {
     next(error);
