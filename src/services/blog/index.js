@@ -2,6 +2,7 @@ import express from "express";
 import createError from "http-errors";
 import blogModel from "./model.js";
 import q2m from "query-to-mongo";
+import { basicAuth } from "../auth/basic.js";
 
 const blogRouter = express.Router();
 
@@ -16,7 +17,7 @@ blogRouter.post("/", async (req, res, next) => {
   }
 });
 
-blogRouter.get("/", async (req, res, next) => {
+blogRouter.get("/", basicAuth, async (req, res, next) => {
   try {
     const mongoQuery = q2m(req.query);
     const total = await blogModel.countDocuments(mongoQuery.criteria);

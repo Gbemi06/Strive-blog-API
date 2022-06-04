@@ -16,4 +16,4 @@ const blogSchema = new Schema(
   { timestamps: true }
 );
 
-export default model("Blog", blogSchema); //
+export default model("Blog", blogSchema);
